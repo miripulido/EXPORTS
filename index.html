@@ -4,1212 +4,745 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AutoExport Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0A0B09;--paper:#F4F2ED;--card:#FFFFFF;
+  --accent:#C8F04A;--accent2:#FF4500;
+  --muted:#888C82;--border:rgba(0,0,0,0.09);
+  --shadow:0 1px 8px rgba(0,0,0,0.07);
+}
+body{background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px}
+a{color:inherit;text-decoration:none}
+button{font-family:'DM Sans',sans-serif;cursor:pointer;border:none;outline:none}
 
-:root {
-  --ink: #0A0B09;
-  --paper: #F5F3EE;
-  --card: #FFFFFF;
-  --accent: #D4FF00;
-  --accent2: #FF4500;
-  --steel: #2A2D27;
-  --muted: #8A8E84;
-  --border: rgba(0,0,0,0.08);
-  --shadow: 0 2px 12px rgba(0,0,0,0.08);
-  --radius: 12px;
+/* TOPBAR */
+.topbar{
+  background:var(--ink);height:52px;
+  display:flex;align-items:center;gap:16px;
+  padding:0 24px;position:sticky;top:0;z-index:100;
 }
+.logo{font-family:'Bebas Neue';font-size:21px;color:var(--accent);letter-spacing:2px;white-space:nowrap}
+.search{
+  flex:1;max-width:320px;
+  background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.13);
+  border-radius:7px;padding:7px 12px;font-size:12px;
+  color:#fff;font-family:'DM Sans',sans-serif;outline:none;
+}
+.search::placeholder{color:rgba(255,255,255,0.35)}
+.search:focus{border-color:var(--accent)}
+.pills{display:flex;gap:5px;flex-wrap:nowrap;overflow-x:auto}
+.pill{
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+  border-radius:20px;padding:4px 11px;font-size:11px;
+  color:rgba(255,255,255,0.6);cursor:pointer;white-space:nowrap;
+  transition:all .15s;font-weight:500;
+}
+.pill:hover{background:rgba(255,255,255,0.14);color:#fff}
+.pill.on{background:var(--accent);color:var(--ink);border-color:var(--accent);font-weight:600}
+.sort-group{display:flex;gap:3px;background:rgba(255,255,255,0.07);border-radius:7px;padding:3px}
+.sbtn{
+  background:none;border:none;padding:4px 9px;font-size:11px;
+  color:rgba(255,255,255,0.45);border-radius:5px;font-weight:500;
+}
+.sbtn.on{background:var(--accent);color:var(--ink);font-weight:700}
+.sbtn:hover:not(.on){color:#fff}
+.favbtn{
+  background:none;border:1px solid rgba(255,255,255,0.15);
+  border-radius:7px;padding:5px 11px;font-size:11px;
+  color:rgba(255,255,255,0.5);white-space:nowrap;
+}
+.favbtn.on{border-color:#FFB800;color:#FFB800;background:rgba(255,184,0,0.1)}
 
-body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  min-height: 100vh;
+/* STATS */
+.statsbar{
+  background:var(--ink);border-top:1px solid rgba(255,255,255,0.06);
+  padding:8px 24px;display:flex;gap:28px;align-items:center;
 }
+.st{display:flex;flex-direction:column;gap:1px}
+.st-v{font-family:'Bebas Neue';font-size:19px;color:var(--accent);letter-spacing:1px}
+.st-l{font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,0.3)}
+.st-div{width:1px;height:26px;background:rgba(255,255,255,0.07)}
 
-/* ── TOPBAR ── */
-.topbar {
-  background: var(--ink);
-  padding: 0 28px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  height: 56px;
-  position: sticky;
-  top: 0;
-  z-index: 50;
+/* RANGE BAR */
+.rangebar{
+  background:#fff;border-bottom:1px solid var(--border);
+  padding:9px 24px;display:flex;gap:24px;align-items:center;flex-wrap:wrap;
 }
+.ri{display:flex;align-items:center;gap:8px}
+.ri label{font-size:11px;color:var(--muted);white-space:nowrap}
+.ri strong{font-size:12px;font-weight:600;color:var(--ink);min-width:52px}
+input[type=range]{width:110px;accent-color:var(--ink);cursor:pointer}
+.refresh-link{margin-left:auto;font-size:11px;color:var(--muted)}
+.refresh-link a{color:var(--ink);font-weight:600}
 
-.logo {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 22px;
-  color: var(--accent);
-  letter-spacing: 2px;
-  white-space: nowrap;
-}
-
-.search-wrap {
-  flex: 1;
-  max-width: 360px;
-}
-
-.search-input {
-  width: 100%;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 13px;
-  color: #fff;
-  font-family: 'DM Sans', sans-serif;
-  outline: none;
-}
-.search-input::placeholder { color: rgba(255,255,255,0.35); }
-.search-input:focus { border-color: var(--accent); }
-
-.top-filters {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  flex: 1;
-}
-
-.filter-pill {
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 20px;
-  padding: 5px 12px;
-  font-size: 12px;
-  color: rgba(255,255,255,0.6);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all .15s;
-  font-family: 'DM Sans', sans-serif;
-}
-.filter-pill:hover { background: rgba(255,255,255,0.12); color: #fff; }
-.filter-pill.on { background: var(--accent); color: var(--ink); border-color: var(--accent); font-weight: 600; }
-
-.sort-group {
-  display: flex;
-  gap: 4px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 8px;
-  padding: 3px;
-}
-.sort-btn {
-  background: none;
-  border: none;
-  padding: 5px 10px;
-  font-size: 11px;
-  color: rgba(255,255,255,0.5);
-  border-radius: 6px;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 500;
-  transition: all .15s;
-}
-.sort-btn.on { background: var(--accent); color: var(--ink); font-weight: 600; }
-.sort-btn:hover:not(.on) { color: #fff; }
-
-.favs-btn {
-  background: none;
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 12px;
-  color: rgba(255,255,255,0.6);
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  white-space: nowrap;
-  transition: all .15s;
-}
-.favs-btn.on { border-color: #FFB800; color: #FFB800; background: rgba(255,184,0,0.1); }
-.favs-btn:hover:not(.on) { color: #fff; border-color: rgba(255,255,255,0.3); }
-
-/* ── STATS BAR ── */
-.statsbar {
-  background: var(--ink);
-  border-top: 1px solid rgba(255,255,255,0.06);
-  padding: 10px 28px;
-  display: flex;
-  gap: 32px;
-  align-items: center;
-}
-.stat {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-.stat-val {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px;
-  color: var(--accent);
-  letter-spacing: 1px;
-}
-.stat-lbl {
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  color: rgba(255,255,255,0.35);
-}
-.stat-divider {
-  width: 1px;
-  height: 28px;
-  background: rgba(255,255,255,0.08);
+/* MAIN LAYOUT */
+.layout{display:flex;height:calc(100vh - 52px - 38px - 43px)}
+.grid-area{flex:1;overflow-y:auto;padding:18px 24px 40px}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:14px;
 }
 
-/* ── RANGE FILTERS ── */
-.range-bar {
-  background: var(--paper);
-  border-bottom: 1px solid var(--border);
-  padding: 10px 28px;
-  display: flex;
-  gap: 32px;
-  align-items: center;
+/* SIDE PANEL */
+.panel{
+  width:0;overflow:hidden;
+  background:var(--card);border-left:1px solid var(--border);
+  transition:width .25s;flex-shrink:0;
+  display:flex;flex-direction:column;
 }
-.range-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.panel.open{width:380px}
+.panel-inner{width:380px;overflow-y:auto;flex:1}
+.panel-close{
+  position:sticky;top:0;z-index:10;
+  background:var(--ink);color:var(--accent);
+  padding:10px 16px;font-family:'Bebas Neue';font-size:14px;letter-spacing:1px;
+  display:flex;align-items:center;justify-content:space-between;cursor:pointer;
+  border:none;width:100%;text-align:left;
 }
-.range-lbl {
-  font-size: 11px;
-  color: var(--muted);
-  white-space: nowrap;
-  min-width: 80px;
-}
-.range-val {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ink);
-  min-width: 55px;
-}
-input[type=range] {
-  width: 120px;
-  accent-color: var(--ink);
-  cursor: pointer;
-}
+.panel-close span{opacity:.6;font-size:18px;line-height:1}
 
-/* ── GRID ── */
-.grid-wrap {
-  padding: 20px 28px 40px;
+/* Photo area in panel */
+.panel-photo{
+  width:100%;height:180px;background:#f0ede6;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;position:relative;
+  font-size:11px;color:var(--muted);text-align:center;
+  flex-direction:column;gap:6px;
 }
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
+.panel-photo .car-icon{font-size:48px;opacity:.2}
+.panel-photo .open-ad-btn{
+  background:var(--ink);color:var(--accent);
+  padding:8px 16px;border-radius:7px;
+  font-family:'Bebas Neue';font-size:13px;letter-spacing:1px;
+  border:none;cursor:pointer;margin-top:4px;
+  transition:background .15s;
 }
+.panel-photo .open-ad-btn:hover{background:#333}
 
-/* ── CARD ── */
-.card {
-  background: var(--card);
-  border-radius: var(--radius);
-  overflow: hidden;
-  cursor: pointer;
-  box-shadow: var(--shadow);
-  border: 1.5px solid transparent;
-  transition: transform .15s, box-shadow .15s, border-color .15s;
-  position: relative;
-}
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 28px rgba(0,0,0,0.13);
-  border-color: var(--ink);
-}
-.card.fav { border-color: #FFB800; }
+/* Panel body */
+.pb{padding:16px}
+.pb-title{font-family:'Bebas Neue';font-size:22px;letter-spacing:1px;margin-bottom:3px}
+.pb-meta{font-size:11px;color:var(--muted);margin-bottom:16px;display:flex;flex-wrap:wrap;gap:6px}
+.pb-meta span{display:flex;align-items:center;gap:3px}
 
-/* Car image */
-.car-img {
-  width: 100%;
-  height: 160px;
-  position: relative;
-  overflow: hidden;
-  background: #f0ede6;
-}
-.car-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform .3s;
-}
-.card:hover .car-img img { transform: scale(1.04); }
-.car-img-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #f0ede6 0%, #e5e2da 100%);
-  gap: 6px;
-}
-.car-img-placeholder span { font-size: 40px; opacity: .3; }
-.car-img-placeholder small { font-size: 11px; color: var(--muted); }
+.psec{margin-bottom:16px}
+.psec-t{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600;margin-bottom:8px}
 
-/* Badges on image */
-.badge-score {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: var(--ink);
-  color: var(--accent);
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 14px;
-  letter-spacing: 1px;
-  padding: 3px 8px;
-  border-radius: 6px;
+/* Cost rows */
+.crow{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px}
+.crow:last-child{border-bottom:none}
+.crow .cl{color:#555}
+.crow .cv{font-weight:600}
+.crow .cv.r{color:#CC2200}
+.crow.tot{
+  background:var(--ink);color:#fff;border-radius:7px;
+  padding:9px 11px;margin-top:5px;
 }
-.badge-src {
-  position: absolute;
-  top: 10px;
-  right: 36px;
-  background: rgba(0,0,0,0.6);
-  color: rgba(255,255,255,0.8);
-  font-size: 9px;
-  padding: 3px 7px;
-  border-radius: 4px;
-  letter-spacing: .3px;
-}
-.badge-fav {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 26px;
-  height: 26px;
-  background: rgba(0,0,0,0.5);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  cursor: pointer;
-  border: none;
-  transition: background .15s, transform .15s;
-  z-index: 2;
-}
-.badge-fav:hover { background: rgba(255,184,0,0.8); transform: scale(1.1); }
-.badge-fav.on { background: rgba(255,184,0,0.9); }
-.badge-tax {
-  position: absolute;
-  bottom: 8px;
-  left: 8px;
-  font-size: 9px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 4px;
-  letter-spacing: .3px;
-}
-.tax-max { background: rgba(255,69,0,0.85); color: #fff; }
-.tax-mid { background: rgba(245,166,35,0.85); color: #111; }
-.tax-low { background: rgba(100,200,100,0.85); color: #111; }
+.crow.tot .cl{color:rgba(255,255,255,0.65)}
+.crow.tot .cv{color:var(--accent);font-family:'Bebas Neue';font-size:16px;letter-spacing:.5px}
 
-/* Card body */
-.card-body { padding: 12px 14px 14px; }
-
-.card-title {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 2px;
+.tax-note{
+  background:#FFF3F0;border:1px solid #FFCCC0;
+  border-radius:7px;padding:9px 11px;font-size:11px;
+  line-height:1.55;color:#555;margin-top:6px;
 }
-.card-meta {
-  font-size: 11px;
-  color: var(--muted);
-  margin-bottom: 10px;
-}
-
-.card-price-row {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-.card-buy-price {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 22px;
-  letter-spacing: 1px;
-  line-height: 1;
-  color: var(--ink);
-}
-.card-total {
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 2px;
-}
-.card-profit {
-  text-align: right;
-}
-.profit-pill {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 9px;
-  border-radius: 20px;
-  margin-bottom: 2px;
-}
-.pp-great { background: #D4FF00; color: var(--ink); }
-.pp-good  { background: #FFF3CD; color: #7A4500; }
-.pp-low   { background: #FFE5E0; color: #8B1A00; }
-.pp-none  { background: #F0F0F0; color: var(--muted); }
-.profit-amt { font-size: 11px; color: var(--muted); }
-.profit-amt b { color: #2A7A2A; }
+.tax-note b{color:#CC2200}
 
 /* Spain price */
-.spain-bar {
-  background: #F8F6F1;
-  border-radius: 8px;
-  padding: 8px 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid var(--border);
+.spain-box{
+  background:#EEF5FB;border:1px solid #C0D8EF;
+  border-radius:9px;padding:11px 13px;
 }
-.spain-lbl { font-size: 10px; color: var(--muted); margin-bottom: 1px; }
-.spain-val { font-size: 12px; font-weight: 700; color: #1A5FA8; }
-.spain-val.pending { color: var(--muted); font-weight: 400; font-style: italic; font-size: 10px; }
+.spain-box.loading{background:#f8f8f8;border-color:#eee;text-align:center;color:var(--muted);font-size:12px;font-style:italic}
+.spain-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:3px 0}
+.spain-row .sl{color:#555}
+.spain-row .sv{font-weight:700;color:#1A5FA8}
+.spain-avg-row{
+  display:flex;justify-content:space-between;align-items:center;
+  border-top:1px solid #C0D8EF;margin-top:6px;padding-top:8px;
+}
+.spain-avg-row .sl{font-size:12px;color:#555;font-weight:500}
+.spain-avg-row .sv{font-family:'Bebas Neue';font-size:20px;letter-spacing:.5px;color:#1A5FA8}
 
-/* ── MODAL ── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.75);
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .2s;
+/* Result */
+.result-box{
+  background:var(--ink);border-radius:9px;
+  padding:13px;display:flex;align-items:center;justify-content:space-between;
 }
-.modal-overlay.open { opacity: 1; pointer-events: all; }
+.rb-l{font-size:11px;color:rgba(255,255,255,0.55)}
+.rb-m{font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px}
+.rb-v{font-family:'Bebas Neue';font-size:28px;letter-spacing:1px}
+.rb-v.pos{color:var(--accent)}
+.rb-v.neg{color:#FF4500}
+.rb-v.unk{color:rgba(255,255,255,0.25);font-size:18px}
 
-.modal {
-  background: var(--card);
-  border-radius: 16px;
-  width: 100%;
-  max-width: 620px;
-  max-height: 93vh;
-  overflow-y: auto;
-  position: relative;
+.open-ad-full{
+  display:block;margin-top:14px;
+  background:var(--accent);color:var(--ink);text-align:center;
+  padding:11px;border-radius:8px;
+  font-family:'Bebas Neue';font-size:14px;letter-spacing:1.5px;
+  font-weight:normal;
 }
+.open-ad-full:hover{background:#b8e000}
+.fav-toggle-btn{
+  display:block;margin-top:8px;width:100%;
+  background:none;border:1px solid var(--border);
+  border-radius:8px;padding:9px;font-size:12px;color:var(--muted);
+  transition:all .15s;
+}
+.fav-toggle-btn:hover{border-color:#FFB800;color:#FFB800}
+.fav-toggle-btn.on{border-color:#FFB800;color:#FFB800;background:rgba(255,184,0,0.06)}
 
 /* Nav arrows */
-.modal-nav {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 201;
-  background: var(--ink);
-  color: var(--accent);
-  border: none;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  font-size: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background .15s, transform .15s;
-  font-family: 'DM Sans', sans-serif;
+.panel-nav{display:flex;gap:6px;margin-top:10px}
+.pnav-btn{
+  flex:1;background:var(--ink);color:var(--accent);
+  border:none;border-radius:8px;padding:9px;
+  font-family:'Bebas Neue';font-size:15px;letter-spacing:1px;cursor:pointer;
 }
-.modal-nav:hover { background: #333; transform: translateY(-50%) scale(1.08); }
-.modal-nav.prev { left: max(16px, calc(50% - 340px)); }
-.modal-nav.next { right: max(16px, calc(50% - 340px)); }
+.pnav-btn:hover{background:#222}
+.pnav-btn:disabled{opacity:.25;cursor:default}
 
-.modal-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 10;
-  background: rgba(0,0,0,0.6);
-  border: none;
-  color: #fff;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  font-size: 13px;
-  cursor: pointer;
+/* CARD */
+.card{
+  background:var(--card);border-radius:11px;
+  overflow:hidden;cursor:pointer;
+  box-shadow:var(--shadow);
+  border:2px solid transparent;
+  transition:transform .15s,box-shadow .15s,border-color .15s;
 }
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.11);border-color:var(--ink)}
+.card.active{border-color:var(--accent)}
+.card.fav{border-color:#FFB800}
 
-.modal-img {
-  width: 100%;
-  height: 220px;
-  background: #f0ede6;
-  border-radius: 16px 16px 0 0;
-  overflow: hidden;
-  position: relative;
+/* Card photo placeholder with gradient */
+.card-photo{
+  width:100%;height:150px;position:relative;
+  background:linear-gradient(135deg,#1a1c18 0%,#2a2d26 50%,#1a1c18 100%);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
 }
-.modal-img img { width: 100%; height: 100%; object-fit: cover; }
-.modal-img-ph {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 64px;
-  opacity: .15;
-  background: linear-gradient(135deg, #f0ede6 0%, #e5e2da 100%);
+.card-model-name{
+  font-family:'Bebas Neue';letter-spacing:2px;
+  text-align:center;padding:0 12px;line-height:1.2;
 }
+.card-model-name .make{font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:3px;text-transform:uppercase;display:block;margin-bottom:3px}
+.card-model-name .model{font-size:22px;color:rgba(255,255,255,0.85)}
+.card-model-name .year{font-size:13px;color:var(--accent);display:block;margin-top:2px}
 
-.modal-body { padding: 20px 24px 28px; }
-.modal-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 26px;
-  letter-spacing: 1.5px;
-  color: var(--ink);
-  margin-bottom: 4px;
+/* Badges */
+.cb-score{
+  position:absolute;top:8px;left:8px;
+  background:rgba(0,0,0,0.7);
+  color:var(--accent);font-family:'Bebas Neue';
+  font-size:13px;padding:3px 8px;border-radius:5px;letter-spacing:.5px;
 }
-.modal-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
+.cb-src{
+  position:absolute;top:8px;right:34px;
+  background:rgba(0,0,0,0.6);color:rgba(255,255,255,0.7);
+  font-size:9px;padding:2px 6px;border-radius:3px;
 }
-.modal-meta span {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.cb-fav{
+  position:absolute;top:6px;right:7px;
+  width:24px;height:24px;border-radius:50%;
+  background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;
+  font-size:13px;border:none;cursor:pointer;transition:all .15s;
+}
+.cb-fav:hover{background:rgba(255,184,0,0.7);transform:scale(1.1)}
+.cb-fav.on{background:rgba(255,184,0,0.8)}
+.cb-tax{
+  position:absolute;bottom:7px;left:7px;
+  font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.2px;
+}
+.tx-max{background:rgba(255,69,0,0.85);color:#fff}
+.tx-mid{background:rgba(245,166,35,0.85);color:#111}
+.tx-low{background:rgba(100,200,100,0.85);color:#111}
+.cb-view{
+  position:absolute;bottom:7px;right:7px;
+  background:rgba(0,0,0,0.6);color:rgba(255,255,255,0.7);
+  font-size:9px;padding:2px 8px;border-radius:4px;
 }
 
-/* Section */
-.msec { margin-bottom: 20px; }
-.msec-title {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--muted);
-  margin-bottom: 10px;
-  font-weight: 600;
+/* Card body */
+.cb{padding:11px 13px 13px}
+.ct{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.cm{font-size:11px;color:var(--muted);margin-bottom:9px}
+.cpr{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:8px}
+.cp{font-family:'Bebas Neue';font-size:21px;letter-spacing:.5px;line-height:1}
+.cp-sub{font-size:10px;color:var(--muted);margin-top:1px}
+.cpft{text-align:right}
+.ppill{
+  display:inline-block;font-size:11px;font-weight:700;
+  padding:2px 8px;border-radius:20px;margin-bottom:2px;
 }
+.pp-g{background:var(--accent);color:var(--ink)}
+.pp-y{background:#FFF3CD;color:#7A4500}
+.pp-r{background:#FFE5E0;color:#8B1A00}
+.pp-n{background:#F0F0F0;color:var(--muted)}
+.pamt{font-size:10px;color:var(--muted)}
+.pamt b{color:#2A7A2A}
+.csp{
+  background:#F0F6FF;border:1px solid #C8DDF5;
+  border-radius:7px;padding:7px 9px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.csp-l{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+.csp-v{font-size:12px;font-weight:700;color:#1A5FA8}
+.csp-v.nd{color:var(--muted);font-weight:400;font-size:10px;font-style:italic}
 
-/* Cost table */
-.cost-rows { display: flex; flex-direction: column; gap: 0; }
-.cost-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 7px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 13px;
-}
-.cost-row:last-child { border-bottom: none; }
-.cost-row .cl { color: #555; }
-.cost-row .cv { font-weight: 600; }
-.cost-row .cv.r { color: #CC2200; }
-.cost-row .cv.g { color: #1A7A1A; }
-.cost-row.total-row {
-  background: var(--ink);
-  color: #fff;
-  border-radius: 8px;
-  padding: 10px 12px;
-  margin-top: 6px;
-  border-bottom: none;
-}
-.cost-row.total-row .cl { color: rgba(255,255,255,0.7); font-weight: 500; }
-.cost-row.total-row .cv { color: var(--accent); font-family: 'Bebas Neue'; font-size: 18px; letter-spacing: 1px; }
+/* Dot loader */
+.dl{display:inline-flex;gap:3px;align-items:center}
+.dl span{width:5px;height:5px;border-radius:50%;background:#1A5FA8;animation:dlan 1.2s infinite;display:inline-block}
+.dl span:nth-child(2){animation-delay:.2s}
+.dl span:nth-child(3){animation-delay:.4s}
+@keyframes dlan{0%,80%,100%{opacity:.2;transform:scale(.7)}40%{opacity:1;transform:scale(1)}}
 
-.tax-alert {
-  background: #FFF3F0;
-  border: 1px solid #FFCCC0;
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 11px;
-  line-height: 1.6;
-  color: #555;
-  margin-top: 8px;
-}
-.tax-alert strong { color: #CC2200; }
+/* Empty/Loader */
+.empty{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--muted)}
+.empty strong{display:block;font-family:'Bebas Neue';font-size:24px;letter-spacing:1px;color:var(--ink);margin-bottom:6px}
+.ld{grid-column:1/-1;display:flex;justify-content:center;gap:6px;padding:60px}
+.ld span{width:8px;height:8px;border-radius:50%;background:var(--ink);animation:dlan 1.2s infinite}
+.ld span:nth-child(2){animation-delay:.2s}
+.ld span:nth-child(3){animation-delay:.4s}
 
-/* Spain price in modal */
-.spain-modal-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 10px;
-}
-.spain-src-card {
-  background: #F8F6F1;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px;
-  text-align: center;
-}
-.spain-src-card.has { border-color: #B8D4F0; background: #EEF5FB; }
-.ssc-name { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 4px; }
-.ssc-val { font-size: 13px; font-weight: 700; color: #1A5FA8; }
-.ssc-val.none { color: var(--muted); font-size: 11px; font-weight: 400; font-style: italic; }
-
-.spain-avg-box {
-  background: #1A5FA8;
-  color: #fff;
-  border-radius: 8px;
-  padding: 12px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.sab-lbl { font-size: 11px; opacity: .8; }
-.sab-val { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 1px; }
-
-.spain-loading {
-  background: #F8F6F1;
-  border-radius: 8px;
-  padding: 16px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-.dot-loader span {
-  width: 6px; height: 6px; border-radius: 50%; background: #1A5FA8;
-  display: inline-block; animation: dl 1.2s infinite;
-}
-.dot-loader span:nth-child(2) { animation-delay: .2s; }
-.dot-loader span:nth-child(3) { animation-delay: .4s; }
-@keyframes dl { 0%,80%,100%{opacity:.2;transform:scale(.7)} 40%{opacity:1;transform:scale(1)} }
-
-/* Result box */
-.result-box {
-  background: var(--ink);
-  border-radius: 10px;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 4px;
-}
-.rb-lbl { font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 2px; }
-.rb-margin { font-size: 11px; color: rgba(255,255,255,0.4); }
-.rb-val {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 32px;
-  letter-spacing: 1px;
-}
-.rb-val.pos { color: var(--accent); }
-.rb-val.neg { color: #FF4500; }
-.rb-val.unk { color: rgba(255,255,255,0.3); font-size: 20px; }
-
-/* Score */
-.score-bar-track {
-  height: 6px;
-  background: #eee;
-  border-radius: 3px;
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-.score-bar-fill { height: 100%; border-radius: 3px; transition: width .4s; }
-.score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.score-factor {
-  background: #F8F6F1;
-  border-radius: 7px;
-  padding: 7px 10px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-}
-.sf-lbl { color: var(--muted); }
-.sf-val { font-weight: 700; }
-
-.modal-link {
-  display: block;
-  margin-top: 16px;
-  background: var(--ink);
-  color: var(--accent);
-  text-align: center;
-  padding: 12px;
-  border-radius: 8px;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 15px;
-  letter-spacing: 1.5px;
-  text-decoration: none;
-  transition: background .15s;
-}
-.modal-link:hover { background: #333; }
-
-/* Empty/loader */
-.empty {
-  grid-column: 1/-1;
-  text-align: center;
-  padding: 80px 20px;
-  color: var(--muted);
-}
-.empty strong {
-  display: block;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 24px;
-  letter-spacing: 1px;
-  color: var(--ink);
-  margin-bottom: 8px;
-}
-.loader {
-  grid-column: 1/-1;
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  padding: 60px;
-}
-.loader span {
-  width: 8px; height: 8px; border-radius: 50%; background: var(--ink);
-  animation: dl 1.2s infinite;
-}
-.loader span:nth-child(2) { animation-delay: .2s; }
-.loader span:nth-child(3) { animation-delay: .4s; }
-
-@media(max-width:700px) {
-  .topbar { flex-wrap: wrap; height: auto; padding: 10px 16px; gap: 8px; }
-  .top-filters { display: none; }
-  .range-bar { flex-wrap: wrap; gap: 12px; padding: 10px 16px; }
-  .grid-wrap { padding: 14px 16px 30px; }
-  .grid { grid-template-columns: 1fr; }
-  .modal-nav { display: none; }
+@media(max-width:700px){
+  .topbar{flex-wrap:wrap;height:auto;padding:10px 16px;gap:8px}
+  .pills{display:none}
+  .sort-group{display:none}
+  .panel.open{width:100%;position:fixed;inset:0;z-index:200}
+  .layout{height:auto}
+  .grid-area{height:auto}
 }
 </style>
 </head>
 <body>
 
 <script>
-// ── CONFIG ──────────────────────────────────────────────────
 const CFG = {
-  supabase_url: "https://hkmfxnqvtklsynrfxjoc.supabase.co",
-  supabase_key: "sb_publishable_Pg7zX6lauC6LoKXhSr02mg_z6Zp307_",
+  supabase_url:"https://hkmfxnqvtklsynrfxjoc.supabase.co",
+  supabase_key:"sb_publishable_Pg7zX6lauC6LoKXhSr02mg_z6Zp307_",
 };
 
-// ── IMÁGENES — usamos Unsplash con query por modelo ─────────
-// Unsplash Source API: funciona sin autenticación, sin bloqueos CORS
-function getCarImageUrl(car) {
-  const t = ((car.title||'') + ' ' + (car.model||'')).toLowerCase();
-  let query = 'car automobile';
-  if (t.includes('camaro'))    query = 'chevrolet+camaro+muscle+car';
-  else if (t.includes('mustang'))   query = 'ford+mustang+gt+muscle';
-  else if (t.includes('challenger')) query = 'dodge+challenger+srt';
-  else if (t.includes('charger'))   query = 'dodge+charger+muscle';
-  else if (t.includes('corvette'))  query = 'chevrolet+corvette+c8';
-  else if (t.includes('ram') && (t.includes('1500')||t.includes('2500')||t.includes('trx'))) query = 'dodge+ram+pickup+truck';
-  else if (t.includes('f-150')||t.includes('f150')) query = 'ford+f150+raptor+truck';
-  else if (t.includes('f-250')||t.includes('f250')) query = 'ford+f250+truck';
-  else if (t.includes('silverado')) query = 'chevrolet+silverado+truck';
-  else if (t.includes('tundra'))    query = 'toyota+tundra+pickup';
-  else if (t.includes('tahoe'))     query = 'chevrolet+tahoe+suv';
-  else if (t.includes('suburban'))  query = 'chevrolet+suburban+suv';
-  else if (t.includes('escalade'))  query = 'cadillac+escalade+suv';
-  else if (t.includes('navigator')) query = 'lincoln+navigator+suv';
-  else if (t.includes('expedition'))query = 'ford+expedition+suv';
-  else if (t.includes('bronco'))    query = 'ford+bronco+off+road';
-  else if (t.includes('wrangler'))  query = 'jeep+wrangler+rubicon';
-  else if (t.includes('hummer'))    query = 'hummer+suv';
-  else if (t.includes('m3'))        query = 'bmw+m3+sport+car';
-  else if (t.includes('m4'))        query = 'bmw+m4+coupe';
-  else if (t.includes('m5'))        query = 'bmw+m5+sedan';
-  else if (t.includes('rs6'))       query = 'audi+rs6+avant+wagon';
-  else if (t.includes('rs7'))       query = 'audi+rs7+sportback';
-  else if (t.includes('amg'))       query = 'mercedes+amg+gt+sport';
-  else if (t.includes('c63'))       query = 'mercedes+amg+c63';
-  else if (t.includes('e63'))       query = 'mercedes+amg+e63';
-  else if (t.includes('z4'))        query = 'bmw+z4+roadster';
-  else if (t.includes('supra'))     query = 'toyota+supra+sport';
-  else if (t.includes('ct5')||t.includes('cadillac')) query = 'cadillac+sport+sedan';
-  // Usamos picsum con seed basado en el modelo para imagen consistente
-  const seed = query.split('+').join('').substring(0, 20);
-  return `https://source.unsplash.com/400x240/?${query}`;
-}
-
-// ── CO2 y MATRICULACIÓN ─────────────────────────────────────
-const CO2 = {
-  camaro:220,mustang:224,challenger:290,charger:295,corvette:230,
+/* ── CO2 DATA ─────────────────────────────────────────── */
+const CO2DB = {
+  camaro:252,mustang:224,challenger:290,charger:295,corvette:230,
   "ram 1500":320,"ram 2500":350,"f-150":285,"f-250":340,
   silverado:310,tundra:265,tahoe:290,suburban:295,
   escalade:300,navigator:295,expedition:280,bronco:240,
   wrangler:210,m3:175,m4:178,m5:215,"amg gt":240,
   c63:195,e63:205,rs6:195,rs7:198,z4:155,
-  hummer:350,lincoln:295,supra:190,ct5:210,
+  hummer:350,lincoln:295,supra:190,
 };
+function getCO2(car){
+  const t=((car.title||'')+(car.model||'')).toLowerCase();
+  for(const[k,v]of Object.entries(CO2DB))if(t.includes(k))return v;
+  return(car.cv||0)>=400?260:200;
+}
+function taxInfo(co2){
+  if(co2>=200)return{rate:.1475,label:"14.75%",cls:"tx-max"};
+  if(co2>=160)return{rate:.0975,label:"9.75%",cls:"tx-mid"};
+  if(co2>=120)return{rate:.0475,label:"4.75%",cls:"tx-low"};
+  return{rate:0,label:"0%",cls:"tx-low"};
+}
+function calcTax(price,co2,year){
+  const ti=taxInfo(co2);
+  const age=new Date().getFullYear()-(year||new Date().getFullYear());
+  const cs=[1,.84,.73,.64,.56,.49,.43,.38];
+  return Math.round(price*(cs[Math.min(age,cs.length-1)])*ti.rate);
+}
+const FIXED={transport:850,itv:80,gestoria:300,dgt:135,traduccion:80};
+const FIXED_T=1445;
 
-function getCO2(car) {
-  const t = ((car.title||'')+(car.model||'')).toLowerCase();
-  for (const [k,v] of Object.entries(CO2)) if (t.includes(k)) return v;
-  return (car.cv||0)>=400 ? 260 : 200;
+function enrich(c){
+  const co2=getCO2(c);
+  const ti=taxInfo(co2);
+  const tax=calcTax(c.price||0,co2,c.year);
+  const totalCost=(c.price||0)+FIXED_T+tax;
+  const spain=c.spain_ref_price||0;
+  const profit=spain>0?spain-totalCost:0;
+  const margin=spain>0?Math.round((profit/spain)*100):0;
+  let sp={};try{sp=JSON.parse(c.spain_prices_detail||'{}')}catch(e){}
+  const t=((c.title||'')+(c.model||'')).toLowerCase();
+  let cat='otro';
+  const CM={muscle:['camaro','mustang','challenger','charger','corvette'],pickup:['ram','f-150','f150','f-250','f250','silverado','tundra'],suv:['tahoe','suburban','escalade','navigator','expedition','bronco','wrangler','hummer','yukon'],sport:['m3','m4','m5','amg','c63','e63','rs6','rs7','ct5','supra'],cabrio:['convertible','cabrio','roadster','z4']};
+  for(const[k,v]of Object.entries(CM))if(v.some(x=>t.includes(x))){cat=k;break}
+  return{...c,co2,ti,tax,totalCost,profit,margin,sp,cat};
 }
 
-function getTaxInfo(co2) {
-  if (co2>=200) return {rate:0.1475, label:"14.75%", cls:"tax-max"};
-  if (co2>=160) return {rate:0.0975, label:"9.75%",  cls:"tax-mid"};
-  if (co2>=120) return {rate:0.0475, label:"4.75%",  cls:"tax-low"};
-  return {rate:0, label:"0%", cls:"tax-low"};
-}
-
-function calcTax(price, co2, year) {
-  const ti = getTaxInfo(co2);
-  const age = new Date().getFullYear() - (year || new Date().getFullYear());
-  const cs = [1,.84,.73,.64,.56,.49,.43,.38];
-  return Math.round(price * (cs[Math.min(age,cs.length-1)]) * ti.rate);
-}
-
-const FIXED_COSTS = { transport:850, itv:80, gestoria:300, dgt:135, traduccion:80 };
-const FIXED_TOTAL = 1445;
-
-function enrichCar(c) {
-  const co2 = getCO2(c);
-  const ti  = getTaxInfo(co2);
-  const tax = calcTax(c.price||0, co2, c.year);
-  const totalCost = (c.price||0) + FIXED_TOTAL + tax;
-  const spain = c.spain_ref_price||0;
-  const profit = spain > 0 ? spain - totalCost : 0;
-  const margin = spain > 0 ? Math.round((profit/spain)*100) : 0;
-  let sp = {};
-  try { sp = JSON.parse(c.spain_prices_detail||'{}'); } catch(e){}
-  const t = ((c.title||'')+(c.model||'')).toLowerCase();
-  let cat = 'otro';
-  const CM = {
-    muscle:['camaro','mustang','challenger','charger','corvette'],
-    pickup:['ram','f-150','f150','f-250','f250','silverado','tundra','tacoma'],
-    suv:['tahoe','suburban','escalade','navigator','expedition','bronco','wrangler','hummer','yukon'],
-    sport:['m3','m4','m5','m8','amg','c63','e63','rs6','rs7','rs3','ct5','supra'],
-    cabrio:['convertible','cabrio','roadster','z4'],
-  };
-  for (const [k,v] of Object.entries(CM)) if (v.some(x=>t.includes(x))) { cat=k; break; }
-  return {...c, co2, taxInfo:ti, tax, totalCost, profit, margin, spain_prices_obj:sp, category:cat};
-}
-
-// ── SPAIN PRICE via Claude API ──────────────────────────────
-const SPAIN_CACHE = {};
-async function getSpainPrice(car) {
-  const key = `${car.make}_${car.model}_${car.year}`.toLowerCase().replace(/\s+/g,'_');
-  if (SPAIN_CACHE[key]) return SPAIN_CACHE[key];
-  try {
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({
-        model:"claude-sonnet-4-20250514",
-        max_tokens:250,
-        system:"Eres experto en el mercado de coches de segunda mano en España. Responde SOLO con JSON válido sin markdown.",
-        messages:[{role:"user",content:`Precio de mercado actual en España para: ${car.year||''} ${car.make||''} ${car.model||''} con ${car.km||30000} km. Basado en coches.net, autoscout24.es y milanuncios. Responde EXACTAMENTE: {"min":NUMBER,"avg":NUMBER,"max":NUMBER}`}]
+/* ── SPAIN PRICE via Claude API ───────────────────────── */
+const CACHE={};
+async function fetchSpain(car){
+  const key=`${car.make}_${car.model}_${car.year}`.toLowerCase().replace(/\s+/g,'_');
+  if(CACHE[key])return CACHE[key];
+  try{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514",max_tokens:200,
+        system:"Experto en segunda mano España. Solo JSON válido sin texto extra.",
+        messages:[{role:"user",content:`Precio mercado segunda mano España: ${car.year||''} ${car.make||''} ${car.model||''} ${car.km||30000}km. Responde exactamente: {"min":NUMBER,"avg":NUMBER,"max":NUMBER}`}]
       })
     });
-    if (!r.ok) throw new Error(`${r.status}`);
-    const d = await r.json();
-    const txt = (d.content?.[0]?.text||'').replace(/```[^`]*```/g,'').trim();
-    const parsed = JSON.parse(txt);
-    SPAIN_CACHE[key] = parsed;
-    return parsed;
-  } catch(e) {
-    return null;
-  }
+    if(!r.ok)throw new Error(r.status);
+    const d=await r.json();
+    const txt=(d.content?.[0]?.text||'').replace(/```[^`]*```/g,'').trim();
+    const p=JSON.parse(txt);
+    CACHE[key]=p;return p;
+  }catch(e){return null}
 }
 
-// ── ESTADO ──────────────────────────────────────────────────
-let ALL=[], FILT=[], SORT='score', SHOW_FAVS=false;
-let FAVS = new Set(JSON.parse(localStorage.getItem('ae_favs')||'[]'));
-let MODAL_IDX = -1;
-const fmt = n => new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n||0);
-const FLAG = {DE:"🇩🇪",FR:"🇫🇷",BE:"🇧🇪",PL:"🇵🇱",PT:"🇵🇹"};
+/* ── STATE ────────────────────────────────────────────── */
+let ALL=[],FILT=[],SORT='score',FAVS=new Set(JSON.parse(localStorage.getItem('ae_favs')||'[]'));
+let SHOW_FAVS=false,ACTIVE_IDX=-1;
+const fmt=n=>new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n||0);
+const FLAG={DE:"🇩🇪",FR:"🇫🇷",BE:"🇧🇪",PL:"🇵🇱",PT:"🇵🇹"};
 
-function saveFavs() { localStorage.setItem('ae_favs', JSON.stringify([...FAVS])); }
-function isFav(c) { return FAVS.has(c.url||String(c.id)); }
-function toggleFav(idx, e) {
-  e.stopPropagation();
-  const c = ALL[idx];
-  const id = c.url||String(c.id);
-  if (FAVS.has(id)) FAVS.delete(id); else FAVS.add(id);
-  saveFavs();
-  renderGrid();
-  updateStats();
+function saveFavs(){localStorage.setItem('ae_favs',JSON.stringify([...FAVS]))}
+function isFav(c){return FAVS.has(c.url||String(c.id))}
+function toggleFavFn(idx,e){
+  if(e)e.stopPropagation();
+  const c=ALL[idx];const id=c.url||String(c.id);
+  if(FAVS.has(id))FAVS.delete(id);else FAVS.add(id);
+  saveFavs();renderGrid();updateStats();
+  if(ACTIVE_IDX===idx)updatePanelFavBtn(idx);
 }
 
-// ── LOAD ────────────────────────────────────────────────────
-async function loadData() {
-  document.getElementById('grid').innerHTML = '<div class="loader"><span></span><span></span><span></span></div>';
-  try {
-    const r = await fetch(`${CFG.supabase_url}/rest/v1/cars?select=*&order=opportunity_score.desc&limit=500`,
+/* ── LOAD ─────────────────────────────────────────────── */
+async function loadData(){
+  document.getElementById('grid').innerHTML='<div class="ld"><span></span><span></span><span></span></div>';
+  try{
+    const r=await fetch(`${CFG.supabase_url}/rest/v1/cars?select=*&order=opportunity_score.desc&limit=500`,
       {headers:{"apikey":CFG.supabase_key,"Authorization":`Bearer ${CFG.supabase_key}`}});
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    const data = await r.json();
-    ALL = data.map(enrichCar);
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
+    ALL=(await r.json()).map(enrich);
     applyFilters();
-  } catch(e) {
-    document.getElementById('grid').innerHTML = `<div class="empty"><strong>Error</strong>${e.message}</div>`;
+  }catch(e){
+    document.getElementById('grid').innerHTML=`<div class="empty"><strong>Error</strong>${e.message}</div>`;
   }
 }
 
-// ── FILTERS ─────────────────────────────────────────────────
-function applyFilters() {
-  const pmin  = +document.getElementById('pmin').value;
-  const pmax  = +document.getElementById('pmax').value;
-  const yr    = +document.getElementById('ymin').value;
-  const q     = document.getElementById('search').value.toLowerCase();
-  const activeCats = [...document.querySelectorAll('.cat-pill.on')].map(x=>x.dataset.cat);
-  const activeCnts = [...document.querySelectorAll('.cnt-pill.on')].map(x=>x.dataset.cnt);
+/* ── FILTERS ──────────────────────────────────────────── */
+function applyFilters(){
+  const pmin=+document.getElementById('pmin').value;
+  const pmax=+document.getElementById('pmax').value;
+  const yr=+document.getElementById('ymin').value;
+  const q=document.getElementById('search').value.toLowerCase();
+  const cats=[...document.querySelectorAll('.cat-pill.on')].map(x=>x.dataset.cat);
+  const cnts=[...document.querySelectorAll('.cnt-pill.on')].map(x=>x.dataset.cnt);
 
-  let src = SHOW_FAVS ? ALL.filter(c=>isFav(c)) : ALL;
-
-  FILT = src.filter(c => {
-    if ((c.price||0)<pmin || (c.price||0)>pmax) return false;
-    if ((c.year||0)>0 && c.year<yr) return false;
-    if (activeCats.length && !activeCats.includes(c.category) && c.category!=='otro') return false;
-    if (activeCnts.length && !activeCnts.includes(c.country)) return false;
-    if (q && !(c.title||'').toLowerCase().includes(q) && !(c.make||'').toLowerCase().includes(q)) return false;
+  let src=SHOW_FAVS?ALL.filter(c=>isFav(c)):ALL;
+  FILT=src.filter(c=>{
+    if((c.price||0)<pmin||(c.price||0)>pmax)return false;
+    if((c.year||0)>0&&c.year<yr)return false;
+    if(cats.length&&!cats.includes(c.cat)&&c.cat!=='otro')return false;
+    if(cnts.length&&!cnts.includes(c.country))return false;
+    if(q&&!(c.title||'').toLowerCase().includes(q)&&!(c.make||'').toLowerCase().includes(q))return false;
     return true;
   });
-
-  renderGrid();
-  updateStats();
+  renderGrid();updateStats();
 }
 
-function setSort(s) {
-  SORT = s;
-  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.toggle('on',b.dataset.s===s));
+function setSort(s){
+  SORT=s;
+  document.querySelectorAll('.sbtn').forEach(b=>b.classList.toggle('on',b.dataset.s===s));
   renderGrid();
 }
-
-function toggleCat(el) {
-  el.classList.toggle('on');
-  applyFilters();
-}
-function toggleCnt(el) {
-  el.classList.toggle('on');
-  applyFilters();
-}
-function toggleFavsView() {
-  SHOW_FAVS = !SHOW_FAVS;
-  document.getElementById('favs-btn').classList.toggle('on', SHOW_FAVS);
-  document.getElementById('favs-btn').textContent = SHOW_FAVS ? '★ Favoritos' : '☆ Favoritos';
+function toggleCat(el){el.classList.toggle('on');applyFilters()}
+function toggleCnt(el){el.classList.toggle('on');applyFilters()}
+function toggleFavsView(){
+  SHOW_FAVS=!SHOW_FAVS;
+  const btn=document.getElementById('favbtn');
+  btn.classList.toggle('on',SHOW_FAVS);
+  btn.textContent=SHOW_FAVS?'★ Favoritos':'☆ Favoritos';
   applyFilters();
 }
 
-function sorted() {
-  return [...FILT].sort((a,b)=>{
-    if (SORT==='profit') return (b.profit||0)-(a.profit||0);
-    if (SORT==='margin') return (b.margin||0)-(a.margin||0);
-    if (SORT==='price')  return (a.price||0)-(b.price||0);
-    if (SORT==='tax')    return (a.tax||0)-(b.tax||0);
-    return (b.opportunity_score||0)-(a.opportunity_score||0);
+function getSorted(){
+  return[...FILT].sort((a,b)=>{
+    if(SORT==='profit')return(b.profit||0)-(a.profit||0);
+    if(SORT==='margin')return(b.margin||0)-(a.margin||0);
+    if(SORT==='price_asc')return(a.price||0)-(b.price||0);
+    if(SORT==='price_desc')return(b.price||0)-(a.price||0);
+    if(SORT==='tax')return(a.tax||0)-(b.tax||0);
+    return(b.opportunity_score||0)-(a.opportunity_score||0);
   });
 }
 
-// ── RENDER ──────────────────────────────────────────────────
-function profitClass(m) { return m>=30?'pp-great':m>=15?'pp-good':m>0?'pp-low':'pp-none'; }
+/* ── RENDER ───────────────────────────────────────────── */
+function ppClass(m){return m>=30?'pp-g':m>=15?'pp-y':m>0?'pp-r':'pp-n'}
 
-function renderCard(c, realIdx) {
-  const fav = isFav(c);
-  const sc  = c.opportunity_score||0;
-  const imgUrl = getCarImageUrl(c);
-
-  return `
-  <div class="card${fav?' fav':''}" onclick="openModal(${realIdx})">
-    <div class="car-img">
-      <img src="${imgUrl}" alt="${c.make||''} ${c.model||''}"
-           onerror="this.parentElement.innerHTML='<div class=car-img-placeholder><span>🚗</span><small>${(c.make||'').substring(0,15)}</small></div>'">
-      <div class="badge-score">★ ${sc}</div>
-      <div class="badge-src">${c.source||''}</div>
-      <button class="badge-fav${fav?' on':''}" onclick="toggleFav(${realIdx},event)">${fav?'★':'☆'}</button>
-      <div class="badge-tax ${c.taxInfo.cls}">IEDMT ${c.taxInfo.label}</div>
+function renderCard(c,realIdx){
+  const fav=isFav(c);
+  const sc=c.opportunity_score||0;
+  const isAct=realIdx===ACTIVE_IDX;
+  const make=(c.make||'').toUpperCase();
+  const model=(c.model||c.title||'').replace(make,'').trim().split(' ').slice(0,3).join(' ').toUpperCase();
+  return`<div class="card${fav?' fav':''}${isAct?' active':''}" onclick="openPanel(${realIdx})">
+  <div class="card-photo">
+    <div class="card-model-name">
+      <span class="make">${make}</span>
+      <span class="model">${model||'—'}</span>
+      <span class="year">${c.year||'—'}</span>
     </div>
-    <div class="card-body">
-      <div class="card-title">${c.title||c.make+' '+c.model}</div>
-      <div class="card-meta">${c.year||'—'} · ${c.cv?c.cv+' CV':'—'} · ${c.km?(c.km/1000).toFixed(0)+'k km':'—'} · ${FLAG[c.country]||''} ${c.country}</div>
-      <div class="card-price-row">
-        <div>
-          <div class="card-buy-price">${fmt(c.price)}</div>
-          <div class="card-total">Total en España: ${fmt(c.totalCost)}</div>
-        </div>
-        <div class="card-profit">
-          <div class="profit-pill ${profitClass(c.margin)}">${c.margin>0?'+'+c.margin+'%':'—'}</div>
-          ${c.profit>0?`<div class="profit-amt">Benef.: <b>+${fmt(c.profit)}</b></div>`:'<div class="profit-amt">Sin datos ES</div>'}
-        </div>
+    <div class="cb-score">★${sc}</div>
+    <div class="cb-src">${c.source||''}</div>
+    <button class="cb-fav${fav?' on':''}" onclick="toggleFavFn(${realIdx},event)">${fav?'★':'☆'}</button>
+    <div class="cb-tax ${c.ti.cls}">IEDMT ${c.ti.label}</div>
+    <div class="cb-view">Ver detalle →</div>
+  </div>
+  <div class="cb">
+    <div class="ct">${c.title||make+' '+model}</div>
+    <div class="cm">${c.cv?c.cv+' CV · ':''}${c.km?(c.km/1000).toFixed(0)+'k km · ':''}${FLAG[c.country]||''} ${c.country}</div>
+    <div class="cpr">
+      <div>
+        <div class="cp">${fmt(c.price)}</div>
+        <div class="cp-sub">Total importado: ${fmt(c.totalCost)}</div>
       </div>
-      <div class="spain-bar">
-        <div>
-          <div class="spain-lbl">Precio ref. España</div>
-        </div>
-        ${c.spain_ref_price
-          ? `<div class="spain-val">${fmt(c.spain_ref_price)}</div>`
-          : `<div class="spain-val pending">Abre para calcular →</div>`}
+      <div class="cpft">
+        <div class="ppill ${ppClass(c.margin)}">${c.margin>0?'+'+c.margin+'%':'—'}</div>
+        ${c.profit>0?`<div class="pamt">Benef.: <b>+${fmt(c.profit)}</b></div>`:'<div class="pamt">Abre para calcular</div>'}
       </div>
     </div>
-  </div>`;
+    <div class="csp">
+      <div>
+        <div class="csp-l">Precio España</div>
+      </div>
+      ${c.spain_ref_price?`<div class="csp-v">${fmt(c.spain_ref_price)}</div>`:`<div class="csp-v nd">Pulsa para calcular →</div>`}
+    </div>
+  </div>
+</div>`;
 }
 
-function renderGrid() {
-  const s = sorted();
-  if (!s.length) {
-    const msg = SHOW_FAVS ? 'Pulsa ☆ en cualquier coche para guardarlo' : 'Prueba ampliando el precio o cambiando filtros';
-    document.getElementById('grid').innerHTML = `<div class="empty"><strong>${SHOW_FAVS?'Sin favoritos':'Sin resultados'}</strong>${msg}</div>`;
+function renderGrid(){
+  const s=getSorted();
+  if(!s.length){
+    const msg=SHOW_FAVS?'Pulsa ☆ en cualquier coche para guardarlo':'Prueba ampliando el precio o cambiando filtros';
+    document.getElementById('grid').innerHTML=`<div class="empty"><strong>${SHOW_FAVS?'Sin favoritos':'Sin resultados'}</strong>${msg}</div>`;
     return;
   }
-  document.getElementById('grid').innerHTML = s.map((c,i) => renderCard(c, ALL.indexOf(c))).join('');
+  document.getElementById('grid').innerHTML=s.map((c)=>renderCard(c,ALL.indexOf(c))).join('');
 }
 
-// ── MODAL ───────────────────────────────────────────────────
-function openModal(idx) {
-  MODAL_IDX = idx;
-  const c = ALL[idx];
-  const imgUrl = getCarImageUrl(c);
+/* ── PANEL ────────────────────────────────────────────── */
+async function openPanel(idx){
+  ACTIVE_IDX=idx;
+  const c=ALL[idx];
+  const panel=document.getElementById('panel');
+  const inner=document.getElementById('panel-inner');
+  panel.classList.add('open');
+  renderGrid(); // highlight active card
 
-  document.getElementById('mc').innerHTML = `
-    <div class="modal-img">
-      <img src="${imgUrl}" alt="${c.make||''} ${c.model||''}"
-           onerror="this.parentElement.innerHTML='<div class=modal-img-ph>🚗</div>'">
+  const make=(c.make||'').toUpperCase();
+  const modelName=(c.model||c.title||'').toUpperCase();
+
+  inner.innerHTML=`
+  <button class="panel-close" onclick="closePanel()">
+    <span>DETALLE DEL COCHE</span>
+    <span>✕</span>
+  </button>
+  <div class="panel-photo">
+    <span class="car-icon">🚗</span>
+    <div style="font-family:'Bebas Neue';font-size:18px;color:rgba(255,255,255,0.6);letter-spacing:2px">${make} ${modelName}</div>
+    ${c.url&&c.url!=='#'?`<button class="open-ad-btn" onclick="window.open('${c.url}','_blank')">VER ANUNCIO CON FOTOS →</button>`:'<div style="font-size:10px;color:rgba(255,255,255,0.3)">URL no disponible</div>'}
+  </div>
+  <div class="pb">
+    <div class="pb-title">${c.title||c.make+' '+c.model}</div>
+    <div class="pb-meta">
+      <span>📅 ${c.year||'—'}</span>
+      <span>⚡ ${c.cv||'—'} CV</span>
+      <span>🛣 ${c.km?(c.km/1000).toFixed(0)+'k km':'—'}</span>
+      <span>${FLAG[c.country]||''} ${c.country}</span>
+      <span>🌿 ${c.co2}g CO₂</span>
     </div>
-    <div class="modal-body">
-      <div class="modal-title">${c.title||c.make+' '+c.model}</div>
-      <div class="modal-meta">
-        <span>📅 ${c.year||'—'}</span>
-        <span>⚡ ${c.cv||'—'} CV</span>
-        <span>🛣 ${c.km?(c.km/1000).toFixed(0)+'k km':'—'}</span>
-        <span>${FLAG[c.country]||''} ${c.country}</span>
-        <span>🌿 ${c.co2} g/km CO₂</span>
-        <span>📦 ${c.source||''}</span>
+
+    <div class="psec">
+      <div class="psec-t">Costes de importación</div>
+      <div class="crow"><span class="cl">Precio de compra</span><span class="cv r">-${fmt(c.price)}</span></div>
+      <div class="crow"><span class="cl">Transporte (Europa→España)</span><span class="cv r">-${fmt(FIXED.transport)}</span></div>
+      <div class="crow"><span class="cl">ITV de importación</span><span class="cv r">-${fmt(FIXED.itv)}</span></div>
+      <div class="crow"><span class="cl">Gestoría especializada</span><span class="cv r">-${fmt(FIXED.gestoria)}</span></div>
+      <div class="crow"><span class="cl">DGT + placas + trámites</span><span class="cv r">-${fmt(FIXED.dgt+FIXED.traduccion)}</span></div>
+      <div class="crow">
+        <span class="cl"><strong>Imp. matriculación (IEDMT)</strong><br><small style="color:#888">${c.co2}g CO₂ → ${c.ti.label}</small></span>
+        <span class="cv r"><strong>-${fmt(c.tax)}</strong></span>
       </div>
+      <div class="crow tot"><span class="cl">TOTAL PUESTO EN ESPAÑA</span><span class="cv">-${fmt(c.totalCost)}</span></div>
+      <div class="tax-note"><b>Impuesto: ${fmt(c.tax)}</b> — ${c.co2}g/km CO₂, tramo <b>${c.ti.label}</b>. ${c.co2>=200?'Motores V8 siempre tributan al máximo (14.75%).':''}</div>
+    </div>
 
-      <div class="msec">
-        <div class="msec-title">Coste real de importación</div>
-        <div class="cost-rows">
-          <div class="cost-row"><span class="cl">Precio de compra</span><span class="cv r">-${fmt(c.price)}</span></div>
-          <div class="cost-row"><span class="cl">Transporte (Alemania → España)</span><span class="cv r">-${fmt(FIXED_COSTS.transport)}</span></div>
-          <div class="cost-row"><span class="cl">ITV de importación</span><span class="cv r">-${fmt(FIXED_COSTS.itv)}</span></div>
-          <div class="cost-row"><span class="cl">Gestoría especializada</span><span class="cv r">-${fmt(FIXED_COSTS.gestoria)}</span></div>
-          <div class="cost-row"><span class="cl">DGT + placas + traducción</span><span class="cv r">-${fmt(FIXED_COSTS.dgt+FIXED_COSTS.traduccion)}</span></div>
-          <div class="cost-row">
-            <span class="cl"><strong>Impuesto matriculación (IEDMT)</strong><br><small style="color:#888">${c.co2} g/km → tipo ${c.taxInfo.label}</small></span>
-            <span class="cv r"><strong>-${fmt(c.tax)}</strong></span>
-          </div>
-          <div class="cost-row total-row"><span class="cl">COSTE TOTAL PUESTO EN ESPAÑA</span><span class="cv">-${fmt(c.totalCost)}</span></div>
-        </div>
-        <div class="tax-alert">
-          <strong>Impuesto matriculación: ${fmt(c.tax)}</strong> — ${c.co2} g/km CO₂ → tramo <strong>${c.taxInfo.label}</strong>.
-          ${c.co2>=200?'Los motores V8 siempre tributan al máximo (14.75%). Es el gasto más importante a tener en cuenta.':'Coeficiente reductor aplicado por antigüedad del vehículo.'}
-        </div>
+    <div class="psec">
+      <div class="psec-t">Precio de referencia en España</div>
+      <div id="spain-panel" class="spain-box loading"><div class="dl"><span></span><span></span><span></span></div> Consultando mercado español...</div>
+    </div>
+
+    <div class="psec">
+      <div class="psec-t">Resultado económico</div>
+      <div id="result-panel" class="result-box">
+        <div><div class="rb-l">Beneficio estimado</div><div class="rb-m">Calculando...</div></div>
+        <div class="rb-v unk">—</div>
       </div>
+    </div>
 
-      <div class="msec">
-        <div class="msec-title">Precio de referencia en España</div>
-        <div id="spain-section">
-          <div class="spain-loading">
-            <div class="dot-loader"><span></span><span></span><span></span></div>
-            Consultando precios en el mercado español...
-          </div>
-        </div>
-      </div>
+    <div class="panel-nav">
+      <button class="pnav-btn" onclick="openPanel(${idx-1})" ${idx<=0?'disabled':''}>← ANTERIOR</button>
+      <button class="pnav-btn" onclick="openPanel(${idx+1})" ${idx>=ALL.length-1?'disabled':''}>SIGUIENTE →</button>
+    </div>
 
-      <div class="msec">
-        <div class="msec-title">Resultado económico</div>
-        <div id="result-section" class="result-box">
-          <div><div class="rb-lbl">Beneficio estimado</div><div class="rb-margin">Calculando...</div></div>
-          <div class="rb-val unk">—</div>
-        </div>
-      </div>
+    ${c.url&&c.url!=='#'?`<a class="open-ad-full" href="${c.url}" target="_blank" rel="noopener">ABRIR ANUNCIO ORIGINAL →</a>`:''}
+    <button class="fav-toggle-btn${isFav(c)?' on':''}" id="fav-panel-btn" onclick="toggleFavFn(${idx},null);updatePanelFavBtn(${idx})">
+      ${isFav(c)?'★ Quitar de favoritos':'☆ Guardar en favoritos'}
+    </button>
+  </div>`;
 
-      <div class="msec">
-        <div class="msec-title">Score de oportunidad: ${sc}/100</div>
-        <div class="score-bar-track">
-          <div class="score-bar-fill" style="width:${sc}%;background:${sc>=80?'#D4FF00':sc>=60?'#F5A623':'#FF4500'}"></div>
-        </div>
-        <div class="score-grid">
-          <div class="score-factor"><span class="sf-lbl">Margen beneficio</span><span class="sf-val">${c.margin>=30?'+30':c.margin>=20?'+20':c.margin>=10?'+10':'0'} pts</span></div>
-          <div class="score-factor"><span class="sf-lbl">Potencia</span><span class="sf-val">${(c.cv||0)>=400?'+10':'+5'} pts</span></div>
-          <div class="score-factor"><span class="sf-lbl">Kilómetros</span><span class="sf-val">${(c.km||99999)<20000?'+10':(c.km||99999)<40000?'+5':'0'} pts</span></div>
-          <div class="score-factor"><span class="sf-lbl">Año ${c.year||'—'}</span><span class="sf-val">${(c.year||0)>=2022?'+8':(c.year||0)>=2020?'+5':'+0'} pts</span></div>
-        </div>
-      </div>
+  // Load Spain price
+  const data=await fetchSpain(c);
+  if(ACTIVE_IDX!==idx)return;
+  const spEl=document.getElementById('spain-panel');
+  const resEl=document.getElementById('result-panel');
+  if(!spEl)return;
 
-      ${c.url&&c.url!=='#'?`<a class="modal-link" href="${c.url}" target="_blank" rel="noopener">VER ANUNCIO ORIGINAL →</a>`:''}
-    </div>`;
-
-  document.getElementById('moverlay').classList.add('open');
-  document.getElementById('mprev').style.display = idx > 0 ? 'flex' : 'none';
-  document.getElementById('mnext').style.display = idx < ALL.length-1 ? 'flex' : 'none';
-
-  // Load Spain price async
-  loadSpainPrice(c, idx);
-}
-
-async function loadSpainPrice(c, idx) {
-  const data = await getSpainPrice(c);
-  if (MODAL_IDX !== idx) return; // Modal changed
-
-  const spEl = document.getElementById('spain-section');
-  const resEl = document.getElementById('result-section');
-  if (!spEl) return;
-
-  if (data && data.avg) {
-    const profit = data.avg - c.totalCost;
-    const margin = Math.round((profit/data.avg)*100);
-
-    spEl.innerHTML = `
-      <div class="spain-modal-grid">
-        <div class="spain-src-card has"><div class="ssc-name">Precio mín.</div><div class="ssc-val">${fmt(data.min)}</div></div>
-        <div class="spain-src-card has"><div class="ssc-name">Precio medio</div><div class="ssc-val">${fmt(data.avg)}</div></div>
-        <div class="spain-src-card has"><div class="ssc-name">Precio máx.</div><div class="ssc-val">${fmt(data.max)}</div></div>
-      </div>
-      <div class="spain-avg-box">
-        <div><div class="sab-lbl">Precio medio mercado español</div><div style="font-size:10px;opacity:.6;margin-top:2px">Estimación basada en coches.net, autoscout24.es y milanuncios</div></div>
-        <div class="sab-val">${fmt(data.avg)}</div>
-      </div>`;
-
-    if (resEl) {
-      resEl.innerHTML = `
-        <div><div class="rb-lbl">Beneficio estimado neto</div><div class="rb-margin">Margen: ${margin}% · Venta: ${fmt(data.avg)}</div></div>
-        <div class="rb-val ${profit>0?'pos':'neg'}">${profit>0?'+':''}${fmt(profit)}</div>`;
+  if(data&&data.avg){
+    const profit=data.avg-c.totalCost;
+    const margin=Math.round((profit/data.avg)*100);
+    spEl.className='spain-box';
+    spEl.innerHTML=`
+      <div class="spain-row"><span class="sl">Precio mínimo mercado</span><span class="sv">${fmt(data.min)}</span></div>
+      <div class="spain-row"><span class="sl">Precio máximo mercado</span><span class="sv">${fmt(data.max)}</span></div>
+      <div class="spain-avg-row"><span class="sl"><strong>Precio medio España</strong><br><small style="color:#888">coches.net · autoscout24.es · milanuncios</small></span><span class="sv">${fmt(data.avg)}</span></div>`;
+    if(resEl){
+      resEl.innerHTML=`<div><div class="rb-l">Beneficio estimado neto</div><div class="rb-m">Margen: ${margin}% · Venta: ${fmt(data.avg)}</div></div><div class="rb-v ${profit>0?'pos':'neg'}">${profit>0?'+':''}${fmt(profit)}</div>`;
     }
-
-    // Update card in grid
-    ALL[idx] = {...ALL[idx], spain_ref_price: data.avg, profit, margin};
+    // Update card data
+    ALL[idx]={...ALL[idx],spain_ref_price:data.avg,profit,margin};
     renderGrid();
-  } else {
-    spEl.innerHTML = `<div style="color:#888;font-size:12px;padding:8px;text-align:center">No se pudo obtener el precio. Intenta de nuevo.</div>`;
+  }else{
+    spEl.className='spain-box';
+    spEl.innerHTML='<div style="color:#888;font-size:12px;text-align:center;padding:4px">No se pudo obtener el precio. Inténtalo de nuevo.</div>';
   }
 }
 
-function navModal(dir) {
-  const newIdx = MODAL_IDX + dir;
-  if (newIdx>=0 && newIdx<ALL.length) openModal(newIdx);
+function closePanel(){
+  ACTIVE_IDX=-1;
+  document.getElementById('panel').classList.remove('open');
+  renderGrid();
 }
 
-function closeModalFn(e) {
-  if (e.target===document.getElementById('moverlay')) {
-    document.getElementById('moverlay').classList.remove('open');
-  }
-}
-function closeModalBtn() {
-  document.getElementById('moverlay').classList.remove('open');
-}
-
-// Keyboard navigation
-document.addEventListener('keydown', e => {
-  if (!document.getElementById('moverlay').classList.contains('open')) return;
-  if (e.key==='ArrowLeft') navModal(-1);
-  if (e.key==='ArrowRight') navModal(1);
-  if (e.key==='Escape') closeModalBtn();
-});
-
-// ── STATS ────────────────────────────────────────────────────
-function updateStats() {
-  document.getElementById('s-total').textContent = FILT.length;
-  document.getElementById('s-favs').textContent = FAVS.size;
-  const wm = FILT.filter(c=>c.margin>0);
-  document.getElementById('s-margin').textContent = wm.length ? '+'+Math.round(wm.reduce((a,c)=>a+c.margin,0)/wm.length)+'%' : '—';
-  const best = FILT.reduce((a,b)=>(a.profit||0)>(b.profit||0)?a:b, {profit:0});
-  document.getElementById('s-best').textContent = best.profit>0 ? '+'+fmt(best.profit) : '—';
-  document.getElementById('s-time').textContent = new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+function updatePanelFavBtn(idx){
+  const btn=document.getElementById('fav-panel-btn');
+  if(!btn)return;
+  const fav=isFav(ALL[idx]);
+  btn.className='fav-toggle-btn'+(fav?' on':'');
+  btn.textContent=fav?'★ Quitar de favoritos':'☆ Guardar en favoritos';
 }
 
-// ── INIT ─────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('pmin').addEventListener('input', function(){
-    document.getElementById('pmin-v').textContent = (+this.value).toLocaleString('es-ES')+'€';
-    applyFilters();
+/* ── STATS ────────────────────────────────────────────── */
+function updateStats(){
+  document.getElementById('st-total').textContent=FILT.length;
+  document.getElementById('st-favs').textContent=FAVS.size;
+  const wm=FILT.filter(c=>c.margin>0);
+  document.getElementById('st-margin').textContent=wm.length?'+'+Math.round(wm.reduce((a,c)=>a+c.margin,0)/wm.length)+'%':'—';
+  const best=FILT.reduce((a,b)=>(a.profit||0)>(b.profit||0)?a:b,{profit:0});
+  document.getElementById('st-best').textContent=best.profit>0?'+'+fmt(best.profit):'—';
+  document.getElementById('st-time').textContent=new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+}
+
+/* ── INIT ─────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded',()=>{
+  ['pmin','pmax','ymin'].forEach(id=>{
+    document.getElementById(id).addEventListener('input',function(){
+      const labels={pmin:'pmin-v',pmax:'pmax-v',ymin:'ymin-v'};
+      const el=document.getElementById(labels[id]);
+      if(id==='ymin')el.textContent=this.value;
+      else el.textContent=(+this.value).toLocaleString('es-ES')+'€';
+      applyFilters();
+    });
   });
-  document.getElementById('pmax').addEventListener('input', function(){
-    document.getElementById('pmax-v').textContent = (+this.value).toLocaleString('es-ES')+'€';
-    applyFilters();
+  document.getElementById('search').addEventListener('input',applyFilters);
+  document.addEventListener('keydown',e=>{
+    if(ACTIVE_IDX<0)return;
+    if(e.key==='ArrowRight'&&ACTIVE_IDX<ALL.length-1)openPanel(ACTIVE_IDX+1);
+    if(e.key==='ArrowLeft'&&ACTIVE_IDX>0)openPanel(ACTIVE_IDX-1);
+    if(e.key==='Escape')closePanel();
   });
-  document.getElementById('ymin').addEventListener('input', function(){
-    document.getElementById('ymin-v').textContent = this.value;
-    applyFilters();
-  });
-  document.getElementById('search').addEventListener('input', applyFilters);
   loadData();
 });
 </script>
 
-<!-- ── TOPBAR ── -->
+<!-- TOPBAR -->
 <div class="topbar">
   <div class="logo">AutoExport Pro</div>
-
-  <div class="search-wrap">
-    <input class="search-input" type="text" id="search" placeholder="Buscar marca o modelo...">
+  <input class="search" type="text" id="search" placeholder="🔍 Buscar marca o modelo...">
+  <div class="pills">
+    <button class="pill cat-pill on" data-cat="muscle" onclick="toggleCat(this)">🏎 Muscle</button>
+    <button class="pill cat-pill on" data-cat="pickup" onclick="toggleCat(this)">🛻 Pickups</button>
+    <button class="pill cat-pill on" data-cat="suv" onclick="toggleCat(this)">🚙 SUV</button>
+    <button class="pill cat-pill on" data-cat="sport" onclick="toggleCat(this)">🏁 Sport</button>
+    <button class="pill cat-pill on" data-cat="cabrio" onclick="toggleCat(this)">☀️ Cabrio</button>
+    <div style="width:1px;height:18px;background:rgba(255,255,255,0.1);margin:0 2px"></div>
+    <button class="pill cnt-pill" data-cnt="DE" onclick="toggleCnt(this)">🇩🇪</button>
+    <button class="pill cnt-pill" data-cnt="FR" onclick="toggleCnt(this)">🇫🇷</button>
+    <button class="pill cnt-pill" data-cnt="BE" onclick="toggleCnt(this)">🇧🇪</button>
+    <button class="pill cnt-pill" data-cnt="PL" onclick="toggleCnt(this)">🇵🇱</button>
+    <button class="pill cnt-pill" data-cnt="PT" onclick="toggleCnt(this)">🇵🇹</button>
   </div>
-
-  <!-- Category filters -->
-  <div class="top-filters">
-    <button class="filter-pill cat-pill on" data-cat="muscle" onclick="toggleCat(this)">🏎 Muscle</button>
-    <button class="filter-pill cat-pill on" data-cat="pickup" onclick="toggleCat(this)">🛻 Pickups</button>
-    <button class="filter-pill cat-pill on" data-cat="suv" onclick="toggleCat(this)">🚙 SUV</button>
-    <button class="filter-pill cat-pill on" data-cat="sport" onclick="toggleCat(this)">🏁 Sport</button>
-    <button class="filter-pill cat-pill on" data-cat="cabrio" onclick="toggleCat(this)">☀️ Cabrio</button>
-    <div style="width:1px;height:20px;background:rgba(255,255,255,0.1)"></div>
-    <button class="filter-pill cnt-pill" data-cnt="DE" onclick="toggleCnt(this)">🇩🇪</button>
-    <button class="filter-pill cnt-pill" data-cnt="FR" onclick="toggleCnt(this)">🇫🇷</button>
-    <button class="filter-pill cnt-pill" data-cnt="BE" onclick="toggleCnt(this)">🇧🇪</button>
-    <button class="filter-pill cnt-pill" data-cnt="PL" onclick="toggleCnt(this)">🇵🇱</button>
-    <button class="filter-pill cnt-pill" data-cnt="PT" onclick="toggleCnt(this)">🇵🇹</button>
-  </div>
-
   <div class="sort-group">
-    <button class="sort-btn on" data-s="score" onclick="setSort('score')">Score</button>
-    <button class="sort-btn" data-s="profit" onclick="setSort('profit')">Beneficio</button>
-    <button class="sort-btn" data-s="margin" onclick="setSort('margin')">Margen</button>
-    <button class="sort-btn" data-s="price" onclick="setSort('price')">Precio ↑</button>
-    <button class="sort-btn" data-s="tax" onclick="setSort('tax')">- Impuesto</button>
+    <button class="sbtn on" data-s="score" onclick="setSort('score')">Score</button>
+    <button class="sbtn" data-s="profit" onclick="setSort('profit')">Beneficio</button>
+    <button class="sbtn" data-s="margin" onclick="setSort('margin')">Margen</button>
+    <button class="sbtn" data-s="price_asc" onclick="setSort('price_asc')">Precio ↑</button>
+    <button class="sbtn" data-s="price_desc" onclick="setSort('price_desc')">Precio ↓</button>
+    <button class="sbtn" data-s="tax" onclick="setSort('tax')">- Impuesto</button>
   </div>
-
-  <button class="favs-btn" id="favs-btn" onclick="toggleFavsView()">☆ Favoritos</button>
+  <button class="favbtn" id="favbtn" onclick="toggleFavsView()">☆ Favoritos</button>
 </div>
 
-<!-- ── STATS BAR ── -->
+<!-- STATS -->
 <div class="statsbar">
-  <div class="stat"><div class="stat-val" id="s-total">—</div><div class="stat-lbl">Coches</div></div>
-  <div class="stat-divider"></div>
-  <div class="stat"><div class="stat-val" id="s-margin">—</div><div class="stat-lbl">Margen medio</div></div>
-  <div class="stat-divider"></div>
-  <div class="stat"><div class="stat-val" id="s-best">—</div><div class="stat-lbl">Mejor beneficio</div></div>
-  <div class="stat-divider"></div>
-  <div class="stat"><div class="stat-val" id="s-favs">0</div><div class="stat-lbl">Favoritos</div></div>
-  <div class="stat-divider"></div>
-  <div class="stat"><div class="stat-val" id="s-time">—</div><div class="stat-lbl">Actualizado</div></div>
+  <div class="st"><div class="st-v" id="st-total">—</div><div class="st-l">Coches</div></div>
+  <div class="st-div"></div>
+  <div class="st"><div class="st-v" id="st-margin">—</div><div class="st-l">Margen medio</div></div>
+  <div class="st-div"></div>
+  <div class="st"><div class="st-v" id="st-best">—</div><div class="st-l">Mejor beneficio</div></div>
+  <div class="st-div"></div>
+  <div class="st"><div class="st-v" id="st-favs">0</div><div class="st-l">Favoritos</div></div>
+  <div class="st-div"></div>
+  <div class="st"><div class="st-v" id="st-time">—</div><div class="st-l">Actualizado</div></div>
 </div>
 
-<!-- ── RANGE FILTERS ── -->
-<div class="range-bar">
-  <div class="range-item">
-    <span class="range-lbl">Precio mín.</span>
+<!-- RANGES -->
+<div class="rangebar">
+  <div class="ri">
+    <label>Precio mín.</label>
     <input type="range" id="pmin" min="0" max="29500" step="500" value="0">
-    <span class="range-val" id="pmin-v">0€</span>
+    <strong id="pmin-v">0€</strong>
   </div>
-  <div class="range-item">
-    <span class="range-lbl">Precio máx.</span>
+  <div class="ri">
+    <label>Precio máx.</label>
     <input type="range" id="pmax" min="500" max="30000" step="500" value="30000">
-    <span class="range-val" id="pmax-v">30.000€</span>
+    <strong id="pmax-v">30.000€</strong>
   </div>
-  <div class="range-item">
-    <span class="range-lbl">Año desde</span>
+  <div class="ri">
+    <label>Año desde</label>
     <input type="range" id="ymin" min="2018" max="2024" step="1" value="2018">
-    <span class="range-val" id="ymin-v">2018</span>
+    <strong id="ymin-v">2018</strong>
   </div>
-  <div style="margin-left:auto;font-size:11px;color:var(--muted)">
-    Actualización automática 08:00 · <a href="#" onclick="loadData();return false" style="color:var(--ink);font-weight:600">↻ Actualizar ahora</a>
-  </div>
-</div>
-
-<!-- ── GRID ── -->
-<div class="grid-wrap">
-  <div class="grid" id="grid">
-    <div class="loader"><span></span><span></span><span></span></div>
+  <div class="refresh-link">
+    Scraper: 08:00 diario &nbsp;·&nbsp; <a href="#" onclick="loadData();return false">↻ Actualizar</a>
   </div>
 </div>
 
-<!-- ── MODAL ── -->
-<div class="modal-overlay" id="moverlay" onclick="closeModalFn(event)">
-  <button class="modal-nav prev" id="mprev" onclick="navModal(-1)">←</button>
-  <div class="modal">
-    <button class="modal-close" onclick="closeModalBtn()">✕</button>
-    <div id="mc"></div>
+<!-- MAIN -->
+<div class="layout">
+  <div class="grid-area">
+    <div class="grid" id="grid">
+      <div class="ld"><span></span><span></span><span></span></div>
+    </div>
   </div>
-  <button class="modal-nav next" id="mnext" onclick="navModal(1)">→</button>
+  <div class="panel" id="panel">
+    <div class="panel-inner" id="panel-inner"></div>
+  </div>
 </div>
 
 </body>
